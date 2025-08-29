@@ -1,5 +1,5 @@
 
-#define DEFAULT_SIZE 20
+const int DEFAULT_SIZE = 20;
 const char * str1_default = "hello";
 const char * str2_default = "world";
 
