@@ -13,16 +13,18 @@ size_t strlen_(const char * str) {
         str++;
     return str - str_start;
 }
+void print_fatal_error() {
+    printf("fatal error has occured");
+}
 
 int unitest_universal() {
-    // strlen
-    char s[DEFAULT_SIZE] = {};
-    char s2[DEFAULT_SIZE] = {};
-    int is_everything_okay = 1;
-
-    FILE *fp = fopen("tests_1_param.txt", "r");
+    FILE *fp = fopen("tests_strlen.txt", "r");
     clear_line(fp); // skip headers
     int ch = 0;
+    int is_everything_okay = 1;
+    char s[DEFAULT_SIZE] = {};
+    char s2[DEFAULT_SIZE] = {};
+    int n = 0;
 
     while ((ch = getc(fp)) != EOF) {
         putc(ch, fp);
@@ -32,26 +34,28 @@ int unitest_universal() {
             return FATAL_ERROR_CODE;
         }
         if (strlen(s) != strlen_(s)) {
-            print_error(s, s2, "strlen");
+            print_error(s, s2, n, "strlen");
             is_everything_okay = 0;
             return 0;
         }
     }
-    if (is_everything_okay) 
+    if (is_everything_okay == FATAL_ERROR_CODE) 
+        print_fatal_error();
+    else
         print_everything_right("strlen");
 
     return 1;
 }
 
-
 void print_everything_right(const char * name) {
     printf(GREEN_COLOR_CODE "every test for function [%s] was done correctly, great job\n" NORMAL_COLOR_CODE, name);
 }
 
-void print_error(const char *s, const char *s2, const char * name) {
+void print_error(const char *s, const char *s2, int n, const char * name) {
     printf(RED_COLOR_CODE "error this testing str functions\n");
     printf("%s: with strings s1: [%s]\n"
-           "                 s2: [%s]\n\n" NORMAL_COLOR_CODE, name, s, s2);
+           "                 s2: [%s]\n"
+           "                  n: [%d]\n\n" NORMAL_COLOR_CODE, name, s, s2, n);
 }
 
 void clear_line(FILE *fp) {
@@ -112,7 +116,7 @@ char * strchr_(char * str1, char ch) {
     return NULL;
 }
 bool is_overlapping(const char * str1, const char * str2) {
-    if (strlen_(str2) - strlen_(str1) == str1 - str2)
+    if (strlen_(str2) - strlen_(str1) == (long long unsigned int) (str1 - str2))
         return 1;
     return 0;
 }
@@ -128,7 +132,7 @@ char * fgets_(char * s, int size, FILE * stream) {
 
     char ch = 0;
     char * start_s = s;
-    while ((ch = getc(stream)) != EOF && size-- > 0) {
+    while ((ch = (char)getc(stream)) != EOF && size-- > 0) {
         *s++ = ch;
         if (ch == '\n')
             return start_s;
@@ -147,7 +151,7 @@ void puts_(const char * str) {
 char * strstr_(char * str1, const char * src) {
     assert(str1 != NULL && src != NULL);
 
-    int len_of_src = strlen_(src);
+    int len_of_src = (int)strlen_(src);
     if (is_overlapping(str1, src))
         return NULL;
 

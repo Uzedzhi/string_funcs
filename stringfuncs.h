@@ -1,7 +1,6 @@
 #ifndef STRINGFUNCS_H
 #define STRINGFUNCS_H
 
-
 #define RED_COLOR_CODE "\033[91m"
 #define GREEN_COLOR_CODE "\033[32m"
 #define NORMAL_COLOR_CODE "\033[37m"
@@ -15,6 +14,9 @@ enum error_codes {
 const int DEFAULT_SIZE = 20;
 
 size_t strlen_(const char * str);
+void print_fatal_error();
+char * strncat_(char * str1, const char * str2, int n);
+char * strncpy_(char * str1, const char * str2, int n);
 char * strchr_(char * str1, char ch);
 char * strcat_(char * str1, const char * str2);
 char * strstr_(char * str1, const char * src);
@@ -28,7 +30,7 @@ bool is_overlapping(const char * str1, const char * str2);
 char * strdup_(const char * str);
 void puts_(const char * str);
 void print_everything_right(const char * name);
-void print_error(const char *s, const char *s2, const char * name);
+void print_error(const char *s, const char *s2, int n, const char * name);
 void clear_line(FILE *fp);
 int unitest_universal();
 
