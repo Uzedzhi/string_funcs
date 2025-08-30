@@ -1,9 +1,18 @@
 #ifndef STRINGFUNCS_H
 #define STRINGFUNCS_H
 
+
+#define RED_COLOR_CODE "\033[91m"
+#define GREEN_COLOR_CODE "\033[32m"
+#define NORMAL_COLOR_CODE "\033[37m"
+#define STRLEN my_current_func = strlen_; \
+               current_func = strlen;
+
+enum error_codes {
+    FATAL_ERROR_CODE = 10
+};
+
 const int DEFAULT_SIZE = 20;
-const char * str1_default = "hello";
-const char * str2_default = "world";
 
 size_t strlen_(const char * str);
 char * strchr_(char * str1, char ch);
@@ -18,5 +27,9 @@ char * fgets_(char * s, int size, FILE * stream);
 bool is_overlapping(const char * str1, const char * str2);
 char * strdup_(const char * str);
 void puts_(const char * str);
+void print_everything_right(const char * name);
+void print_error(const char *s, const char *s2, const char * name);
+void clear_line(FILE *fp);
+int unitest_universal();
 
 #endif // STRINGFUNCS_H

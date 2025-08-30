@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "stringfuncs.h"
 
@@ -11,6 +12,54 @@ size_t strlen_(const char * str) {
     while (*str != '\0')
         str++;
     return str - str_start;
+}
+
+int unitest_universal() {
+    // strlen
+    char s[DEFAULT_SIZE] = {};
+    char s2[DEFAULT_SIZE] = {};
+    int is_everything_okay = 1;
+
+    FILE *fp = fopen("tests_1_param.txt", "r");
+    clear_line(fp); // skip headers
+    int ch = 0;
+
+    while ((ch = getc(fp)) != EOF) {
+        putc(ch, fp);
+
+        if (fscanf(fp, "%49s", s) != 1) {
+            printf("invalid tests file"); 
+            return FATAL_ERROR_CODE;
+        }
+        if (strlen(s) != strlen_(s)) {
+            print_error(s, s2, "strlen");
+            is_everything_okay = 0;
+            return 0;
+        }
+    }
+    if (is_everything_okay) 
+        print_everything_right("strlen");
+
+    return 1;
+}
+
+
+void print_everything_right(const char * name) {
+    printf(GREEN_COLOR_CODE "every test for function [%s] was done correctly, great job\n" NORMAL_COLOR_CODE, name);
+}
+
+void print_error(const char *s, const char *s2, const char * name) {
+    printf(RED_COLOR_CODE "error this testing str functions\n");
+    printf("%s: with strings s1: [%s]\n"
+           "                 s2: [%s]\n\n" NORMAL_COLOR_CODE, name, s, s2);
+}
+
+void clear_line(FILE *fp) {
+    assert(fp != NULL);
+
+    int ch = 0;
+    while ((ch = getc(fp)) != EOF && ch != '\n')
+        ;
 }
 
 void print_before(const char * func_name, char * s, char * s2) {
