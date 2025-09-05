@@ -11,15 +11,21 @@ enum error_codes {
     FATAL_ERROR_CODE = 10
 };
 
-const int DEFAULT_SIZE = 20;
+const int DEFAULT_SIZE = 50;
+const int SIZE = 100;
+const int BASE = 2017;
+const int MOD = 1000000009;
 
 size_t strlen_(const char * str);
+long int get_hash(int left, int right, long int *hash, long int * powers);
+void init_hash(const char *str, long int *hash);
+void init_powers(long int * powers);
 void print_fatal_error();
 char * strncat_(char * str1, const char * str2, int n);
 char * strncpy_(char * str1, const char * str2, int n);
 char * strchr_(char * str1, char ch);
 char * strcat_(char * str1, const char * str2);
-char * strstr_(char * str1, const char * src);
+const char * strstr_(const char * str1, const char * src);
 int strcmp_(const char * str1, const char * str2);
 char * strcpy_(char * str1, const char * str2);
 void print_before(const char * func_name, char * s, char * s2);

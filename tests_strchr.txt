@@ -1,0 +1,10 @@
+strchr
+sdfgfhghjg, q
+sdfgfhghjg, j
+helloworld, w
+hihihihihihihihihi, i
+12345678970, 0
+213456789087654321, 8
+hellohellohelloworldworld, o
+e\\wordbgfjewk, \
+ew][rgdfls], ]

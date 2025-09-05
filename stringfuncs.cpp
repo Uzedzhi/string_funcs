@@ -5,6 +5,35 @@
 
 #include "stringfuncs.h"
 
+#define SCAN_AND_COMPARE(func_name, count, ...)\
+    if (fscanf(fp, "%[^,\n], %[^,\n], %d", ##__VA_ARGS__) != count) { \
+            printf("%s %s", s, s2); \
+            printf("invalid tests file");\
+            return FATAL_ERROR_CODE;\
+    }\
+    clear_line(fp);\
+    if ((func_name ## _)(__VA_ARGS__) != func_name(__VA_ARGS__)) {\
+        printf("[%s], [%s]\n", (func_name ## _)(__VA_ARGS__), func_name(__VA_ARGS__));\
+        print_error(s, s2, n, #func_name);\
+        is_everything_okay = 0;\
+    }
+
+#define CHECK_CORRECT(func_name, fp) \
+    if (is_everything_okay)\
+        print_everything_right(#func_name);\
+    is_everything_okay = 1;\
+
+#define DO_TEST(func_name, count, s, ...) \
+    fp = fopen("tests_" #func_name ".txt", "r");\
+    clear_line(fp); \
+    while ((ch = fgetc(fp)) != EOF) {\
+        ungetc(ch, fp);\
+        SCAN_AND_COMPARE(func_name, count, s, ##__VA_ARGS__)\
+    }\
+    CHECK_CORRECT(func_name, fp)\
+    fclose(fp);
+
+
 size_t strlen_(const char * str) {
     assert(str != NULL);
 
@@ -17,33 +46,31 @@ void print_fatal_error() {
     printf("fatal error has occured");
 }
 
+void init_hash(const char *str, long int *hash, int strlen_str) {
+    hash[0] = 0;
+
+    for (int i = 1; i <= strlen_str; ++i)
+    {
+        hash[i] = hash[i-1] + str[i-1];
+    }
+}
+
+long int get_hash(int left, int right, long int hash[]) {
+    return hash[right] - hash[left];
+}
+
 int unitest_universal() {
-    FILE *fp = fopen("tests_strlen.txt", "r");
-    clear_line(fp); // skip headers
     int ch = 0;
     int is_everything_okay = 1;
     char s[DEFAULT_SIZE] = {};
     char s2[DEFAULT_SIZE] = {};
     int n = 0;
+    FILE *fp;
 
-    while ((ch = getc(fp)) != EOF) {
-        putc(ch, fp);
-
-        if (fscanf(fp, "%49s", s) != 1) {
-            printf("invalid tests file"); 
-            return FATAL_ERROR_CODE;
-        }
-        if (strlen(s) != strlen_(s)) {
-            print_error(s, s2, n, "strlen");
-            is_everything_okay = 0;
-            return 0;
-        }
-    }
-    if (is_everything_okay == FATAL_ERROR_CODE) 
-        print_fatal_error();
-    else
-        print_everything_right("strlen");
-
+    // strlen
+    DO_TEST(strlen, 1, s);
+    DO_TEST(strstr, 2, s, s2);
+    DO_TEST(strcat, 2, s, s2);
     return 1;
 }
 
@@ -122,7 +149,7 @@ bool is_overlapping(const char * str1, const char * str2) {
 }
 
 char * strdup_(const char * str) {
-    char * str_dup = (char *) malloc(strlen_(str));
+    char * str_dup = (char *) calloc(strlen_(str)+1, sizeof(char));
     strcpy_(str_dup, str);
     return str_dup;
 }
@@ -148,19 +175,20 @@ void puts_(const char * str) {
     
 }
 
-char * strstr_(char * str1, const char * src) {
-    assert(str1 != NULL && src != NULL);
+const char * strstr_(const char * str, const char * src) {
+    assert(str != NULL && src != NULL);
+    long int strhash[SIZE] = {};
+    long int srchash[SIZE] = {};
+    int strlen_str = strlen(str);
+    int strlen_src = strlen(src);
 
-    int len_of_src = (int)strlen_(src);
-    if (is_overlapping(str1, src))
-        return NULL;
+    init_hash(str, strhash, strlen_str);
+    init_hash(src, srchash, strlen_src);
 
-    while (*(str1 + len_of_src) != '\0') {
-        if (!strncmp_(str1, src, len_of_src))
-            return str1;
-        str1++;
+    for (int i = 0; i <= strlen_str-strlen_src; i++) {
+        if (get_hash(i, i + strlen_src, strhash) == srchash[strlen_src])
+            return str+i;
     }
-
     return NULL;
 }
 
@@ -188,7 +216,6 @@ char * strcat_(char * str1, const char * str2) {
 
     if (is_overlapping(str1, str2))
         return NULL;
-    
     char* start_of_str1 = str1;
     while (*str1 != '\0')
         str1++;
